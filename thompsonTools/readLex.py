@@ -77,12 +77,38 @@ class Lexer:
         tokens = self.tokens
         for token in tokens:
             if token.regex.startswith('[') and token.regex.endswith(']'):
+                # Si hay comillas dobles reemplazar por simples
+                for element in token.regex:
+                    if element == '"':
+                        element.replace(element, "'")
+                
+                if token.regex.count("'") % 2 != 0:
+                    raise Exception("Comillas no balanceadas")
+                
+                # Si hay mas de 2 comillas consecutivas 
+                for i in range(len(token.regex) - 2):
+                    element = token.regex[i]
+                    if token.regex[i] == token.regex[i+1] == [i+2]:
+                        raise Exception("Error en comillas")
+
+                # Si hay mas de 1 comilla al inicio o al final
+                if token.regex[:-1].endswith("''") or token.regex[1:].startswith("''"):
+                    raise Exception("Error en comillas")
+
+
+                token.regex = token.regex[1:-1]
+                # split by space
+                elements = token.regex.split(' ')
+                token.regex = 123
+
                 start, end = token.regex[1:-1].split('-')
                 if len(start) == 3 and len(end) == 3:
                     start, end = start[1], end[1]
                 elif len(start) != 1 or len(end) != 1:
                     raise Exception("Formato de regex incorrecto")
                 if start.isalpha() and end.isalpha():
+                    ordd = ord('A')
+                    orddEnd = ord('Z')+1
                     elements = [chr(i) for i in range(ord(start), ord(end)+1)]
                     token.regex = '|'.join(elements) 
                 elif start.isdigit() and end.isdigit():
@@ -95,6 +121,9 @@ class Lexer:
     
     
 if __name__ == '__main__':
+    # lexer = Lexer('thompsonTools/lexer.yal')
     lexer = Lexer('thompsonTools/lexer.yal')
     tokenizer = lexer.getTokens()
     lexer.fixRegex()
+    for token in lexer.tokens:
+        print(token.name, token.regex)
