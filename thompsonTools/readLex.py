@@ -143,10 +143,20 @@ class Lexer:
                         if '-' in tokens_list[i]:
                             start, end = tokens_list[i].split('-')
                             elements += self.range_maker(start, end)
+                    token.regex = ''
                     if elements:    
-                        token.regex = '|'.join(elements)
+                        token.regex += '|'.join(elements)
+                        more = False
+                        add_list = []
+                        for el in tokens_list:
+                            if el not in elements and '-' not in el:
+                                add_list.append(el)
+                                more = True
+                        if more:
+                            token.regex += '|' + '|'.join(add_list)
+
                     else:
-                        token.regex = '|'.join(tokens_list)
+                        token.regex += '|'+'|'.join(tokens_list)
                 else:
                     start, end = token.regex[1:-1].split('-')
                     elements = self.range_maker(start, end)
@@ -160,5 +170,6 @@ if __name__ == '__main__':
     lexer = Lexer('thompsonTools/lexer.yal')
     tokenizer = lexer.getTokens()
     lexer.change_range_format()
+    aa = 0
     # for token in lexer.tokens:
     #     print(token.name, token.regex)
