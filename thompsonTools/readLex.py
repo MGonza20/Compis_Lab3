@@ -72,6 +72,7 @@ class Lexer:
                 token.regex = regex
                 self.tokens.append(token)
 
+
     def range_maker(self, start, end):
         if len(start) == 3 and len(end) == 3:
             start, end = start[1], end[1]
@@ -94,7 +95,7 @@ class Lexer:
         return elements
 
     
-    def fixRegex(self):
+    def change_range_format(self):
         tokens = self.tokens
         for token in tokens:
             if token.regex.startswith('[') and token.regex.endswith(']'):
@@ -108,7 +109,6 @@ class Lexer:
                 
                 # Si hay mas de 2 comillas consecutivas 
                 for i in range(len(token.regex) - 2):
-                    element = token.regex[i]
                     if token.regex[i] == token.regex[i+1] == [i+2]:
                         raise Exception("Error en comillas")
 
@@ -117,8 +117,9 @@ class Lexer:
                     raise Exception("Error en comillas")
                 
                 if token.regex.count("''") > 0:
-                    token.regex = token.regex.replace("''", "'|'")
-                    tokens_list = token.regex[1:-1].split("|")
+                    if token.regex.startswith('[') and token.regex.endswith(']'):
+                        token.regex = token.regex.replace("''", "'|'")
+                        tokens_list = token.regex[1:-1].split("|")
 
                     elements = []
                     for i in range(len(tokens_list)):
@@ -126,13 +127,10 @@ class Lexer:
                         elements += self.range_maker(start, end)
                     token.regex = '|'.join(elements)
                 else:
-                    if token.regex.startswith('[') and token.regex.endswith(']'):
-                        start, end = token.regex[1:-1].split('-')
-                        elements = self.range_maker(start, end)
-                        token.regex = '|'.join(elements) 
+                    start, end = token.regex[1:-1].split('-')
+                    elements = self.range_maker(start, end)
+                    token.regex = '|'.join(elements) 
 
-                mm = token.regex
-                aaa = 123
 
     
     
@@ -140,6 +138,6 @@ if __name__ == '__main__':
     lexer = Lexer('lexer.yal')
     # lexer = Lexer('thompsonTools/lexer.yal')
     tokenizer = lexer.getTokens()
-    lexer.fixRegex()
+    lexer.change_range_format()
     for token in lexer.tokens:
         print(token.name, token.regex)
