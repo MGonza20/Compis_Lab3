@@ -52,14 +52,34 @@ class Lexer:
         self.tokens = []
         self.tokenizer = None
 
+    
+    def remove_spaces(self, lines):
+        wo_spaces = []
+        # Si hay comillas dobles reemplazar por simples
+        for i in range(len(lines)):
+            lines[i] = lines[i].replace('"', "'")
+
+        for line in lines:
+            new_line = []
+            between_q = False
+            for char in line:
+                if char == "'":
+                    between_q = not between_q
+                if char != " " or between_q:
+                    new_line.append(char)
+            wo_spaces.append("".join(new_line))
+        return wo_spaces
+
 
     def getLines(self):
-        f = open(self.filename, "r")
+        f = open(self.filename, "r", encoding="utf-8")
         lines = f.readlines()
         f.close()
-    
+
+        lines = [line.encode('utf-8').decode('unicode_escape') for line in lines]
         lines = [line.strip() for line in lines if line.strip() != ""]
-        return [line.replace(" ", "") for line in lines]   
+        return self.remove_spaces(lines)  
+        return lines
 
 
     def getTokens(self):
@@ -99,10 +119,7 @@ class Lexer:
         tokens = self.tokens
         for token in tokens:
             if token.regex.startswith('[') and token.regex.endswith(']'):
-                # Si hay comillas dobles reemplazar por simples
-                for element in token.regex:
-                    if element == '"':
-                        element.replace(element, "'")
+                
                 
                 if token.regex.count("'") % 2 != 0:
                     raise Exception("Comillas no balanceadas")
@@ -111,7 +128,7 @@ class Lexer:
                 for i in range(len(token.regex) - 2):
                     if token.regex[i] == token.regex[i+1] == [i+2]:
                         raise Exception("Error en comillas")
-
+                
                 # Si hay mas de 1 comilla al inicio o al final
                 if token.regex[:-1].endswith("''") or token.regex[1:].startswith("''"):
                     raise Exception("Error en comillas")
@@ -123,9 +140,13 @@ class Lexer:
 
                     elements = []
                     for i in range(len(tokens_list)):
-                        start, end = tokens_list[i].split('-')
-                        elements += self.range_maker(start, end)
-                    token.regex = '|'.join(elements)
+                        if '-' in tokens_list[i]:
+                            start, end = tokens_list[i].split('-')
+                            elements += self.range_maker(start, end)
+                    if elements:    
+                        token.regex = '|'.join(elements)
+                    else:
+                        token.regex = '|'.join(tokens_list)
                 else:
                     start, end = token.regex[1:-1].split('-')
                     elements = self.range_maker(start, end)
@@ -135,9 +156,9 @@ class Lexer:
     
     
 if __name__ == '__main__':
-    lexer = Lexer('lexer.yal')
-    # lexer = Lexer('thompsonTools/lexer.yal')
+    # lexer = Lexer('lexer.yal')
+    lexer = Lexer('thompsonTools/lexer.yal')
     tokenizer = lexer.getTokens()
     lexer.change_range_format()
-    for token in lexer.tokens:
-        print(token.name, token.regex)
+    # for token in lexer.tokens:
+    #     print(token.name, token.regex)
