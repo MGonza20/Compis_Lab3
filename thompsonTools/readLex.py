@@ -94,24 +94,43 @@ class Lexer:
                 # Si hay mas de 1 comilla al inicio o al final
                 if token.regex[:-1].endswith("''") or token.regex[1:].startswith("''"):
                     raise Exception("Error en comillas")
+                
+                if token.regex.count("''") > 0:
+                    token.regex = token.regex.replace("''", "'|'")
+                    tokens_list = token.regex[1:-1].split("|")
 
-
-
-                start, end = token.regex[1:-1].split('-')
-                if len(start) == 3 and len(end) == 3:
-                    start, end = start[1], end[1]
-                elif len(start) != 1 or len(end) != 1:
-                    raise Exception("Formato de regex incorrecto")
-                if start.isalpha() and end.isalpha():
-                    ordd = ord('A')
-                    orddEnd = ord('Z')+1
-                    elements = [chr(i) for i in range(ord(start), ord(end)+1)]
+                    elements = []
+                    for i in range(len(tokens_list)):
+                        start, end = tokens_list[i].split('-')
+                        if len(start) == 3 and len(end) == 3:
+                            start, end = start[1], end[1]
+                        elif len(start) != 1 or len(end) != 1:
+                            raise Exception("Formato de regex incorrecto")
+                        if start.isalpha() and end.isalpha():
+                            if not elements:
+                                elements = [chr(i) for i in range(ord(start), ord(end)+1)]
+                            else:
+                                elements += [chr(i) for i in range(ord(start), ord(end)+1)]
+                        elif start.isdigit() and end.isdigit():
+                            start, end = int(start), int(end)
+                            elements = [str(i) for i in range(start, end+1)]
                     token.regex = '|'.join(elements) 
-                elif start.isdigit() and end.isdigit():
-                    start, end = int(start), int(end)
-                    elements = [str(i) for i in range(start, end+1)]
-                    token.regex = '|'.join(elements) 
+                else:
+                    if token.regex.startswith('[') and token.regex.endswith(']'):
+                        start, end = token.regex[1:-1].split('-')
+                        if len(start) == 3 and len(end) == 3:
+                            start, end = start[1], end[1]
+                        elif len(start) != 1 or len(end) != 1:
+                            raise Exception("Formato de regex incorrecto")
+                        if start.isalpha() and end.isalpha():
+                            elements = [chr(i) for i in range(ord(start), ord(end)+1)]
+                            token.regex = '|'.join(elements) 
+                        elif start.isdigit() and end.isdigit():
+                            start, end = int(start), int(end)
+                            elements = [str(i) for i in range(start, end+1)]
+                            token.regex = '|'.join(elements) 
 
+                mm = token.regex
                 aaa = 123
 
     
