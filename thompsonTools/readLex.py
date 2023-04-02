@@ -168,7 +168,12 @@ class Lexer:
                         elif token.regex.startswith('[') and token.regex.endswith(']'):
                             token.regex = token.regex[1:-1]
 
-
+    def replace_tokens(self):
+        for tk in self.tokens:
+            for token in self.tokens:
+                if token.name in tk.regex:
+                    tk.regex = tk.regex.replace(token.name, '('+token.regex+')')
+        # self.tokens = tokens
     
     
 if __name__ == '__main__':
@@ -176,4 +181,5 @@ if __name__ == '__main__':
     lexer = Lexer('thompsonTools/lexer.yal')
     tokenizer = lexer.getTokens()
     lexer.change_range_format()
+    lexer.replace_tokens()
     aa = 0
