@@ -154,9 +154,8 @@ class Lexer:
                                 more = True
                         if more:
                             token.regex += '|' + '|'.join(add_list)
-
                     else:
-                        token.regex += '|'+'|'.join(tokens_list)
+                        token.regex += '|'.join(tokens_list)
                 else:
                     start, end = token.regex[1:-1].split('-')
                     elements = self.range_maker(start, end)
