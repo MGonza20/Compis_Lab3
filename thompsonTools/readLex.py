@@ -173,11 +173,9 @@ class Lexer:
             for token in self.tokens:
                 if token.name in tk.regex:
                     tk.regex = tk.regex.replace(token.name, '('+token.regex+')')
-        # self.tokens = tokens
     
     
 if __name__ == '__main__':
-    # lexer = Lexer('lexer.yal')
     lexer = Lexer('thompsonTools/lexer.yal')
     tokenizer = lexer.getTokens()
     lexer.change_range_format()
