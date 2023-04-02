@@ -96,10 +96,6 @@ class Lexer:
                     raise Exception("Error en comillas")
 
 
-                token.regex = token.regex[1:-1]
-                # split by space
-                elements = token.regex.split(' ')
-                token.regex = 123
 
                 start, end = token.regex[1:-1].split('-')
                 if len(start) == 3 and len(end) == 3:
