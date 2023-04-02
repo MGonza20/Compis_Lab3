@@ -72,6 +72,27 @@ class Lexer:
                 token.regex = regex
                 self.tokens.append(token)
 
+    def range_maker(self, start, end):
+        if len(start) == 3 and len(end) == 3:
+            start, end = start[1], end[1]
+        elif len(start) != 1 or len(end) != 1:
+            raise Exception("Formato de regex incorrecto")
+
+        if start.isalpha() and end.isalpha():
+            if ord(start) > ord(end):
+                raise Exception("Rango incorrecto")
+            elements = [chr(i) for i in range(ord(start), ord(end) + 1)]
+
+        elif start.isdigit() and end.isdigit():
+            start, end = int(start), int(end)
+            if start > end:
+                raise Exception("Rango incorrecto")
+            elements = [str(i) for i in range(start, end + 1)]
+        else:
+            raise Exception("Formato de regex incorrecto")
+
+        return elements
+
     
     def fixRegex(self):
         tokens = self.tokens
@@ -102,41 +123,13 @@ class Lexer:
                     elements = []
                     for i in range(len(tokens_list)):
                         start, end = tokens_list[i].split('-')
-                        if len(start) == 3 and len(end) == 3:
-                            start, end = start[1], end[1]
-                        elif len(start) != 1 or len(end) != 1:
-                            raise Exception("Formato de regex incorrecto")
-                        if start.isalpha() and end.isalpha():
-                            if ord(start) > ord(end):
-                                raise Exception("Rango incorrecto")
-                            if not elements:
-                                elements = [chr(i) for i in range(ord(start), ord(end)+1)]
-                            else:
-                                elements += [chr(i) for i in range(ord(start), ord(end)+1)]
-                        elif start.isdigit() and end.isdigit():
-                            start, end = int(start), int(end)
-                            if start > end:
-                                raise Exception("Rango incorrecto")
-                            elements = [str(i) for i in range(start, end+1)]
-                    token.regex = '|'.join(elements) 
+                        elements += self.range_maker(start, end)
+                    token.regex = '|'.join(elements)
                 else:
                     if token.regex.startswith('[') and token.regex.endswith(']'):
                         start, end = token.regex[1:-1].split('-')
-                        if len(start) == 3 and len(end) == 3:
-                            start, end = start[1], end[1]
-                        elif len(start) != 1 or len(end) != 1:
-                            raise Exception("Formato de regex incorrecto")
-                        if start.isalpha() and end.isalpha():
-                            if ord(start) > ord(end):
-                                raise Exception("Rango incorrecto")
-                            elements = [chr(i) for i in range(ord(start), ord(end)+1)]
-                            token.regex = '|'.join(elements) 
-                        elif start.isdigit() and end.isdigit():
-                            start, end = int(start), int(end)
-                            if start > end:
-                                raise Exception("Rango incorrecto")
-                            elements = [str(i) for i in range(start, end+1)]
-                            token.regex = '|'.join(elements) 
+                        elements = self.range_maker(start, end)
+                        token.regex = '|'.join(elements) 
 
                 mm = token.regex
                 aaa = 123
