@@ -107,12 +107,16 @@ class Lexer:
                         elif len(start) != 1 or len(end) != 1:
                             raise Exception("Formato de regex incorrecto")
                         if start.isalpha() and end.isalpha():
+                            if ord(start) > ord(end):
+                                raise Exception("Rango incorrecto")
                             if not elements:
                                 elements = [chr(i) for i in range(ord(start), ord(end)+1)]
                             else:
                                 elements += [chr(i) for i in range(ord(start), ord(end)+1)]
                         elif start.isdigit() and end.isdigit():
                             start, end = int(start), int(end)
+                            if start > end:
+                                raise Exception("Rango incorrecto")
                             elements = [str(i) for i in range(start, end+1)]
                     token.regex = '|'.join(elements) 
                 else:
@@ -123,10 +127,14 @@ class Lexer:
                         elif len(start) != 1 or len(end) != 1:
                             raise Exception("Formato de regex incorrecto")
                         if start.isalpha() and end.isalpha():
+                            if ord(start) > ord(end):
+                                raise Exception("Rango incorrecto")
                             elements = [chr(i) for i in range(ord(start), ord(end)+1)]
                             token.regex = '|'.join(elements) 
                         elif start.isdigit() and end.isdigit():
                             start, end = int(start), int(end)
+                            if start > end:
+                                raise Exception("Rango incorrecto")
                             elements = [str(i) for i in range(start, end+1)]
                             token.regex = '|'.join(elements) 
 
@@ -136,8 +144,8 @@ class Lexer:
     
     
 if __name__ == '__main__':
+    lexer = Lexer('lexer.yal')
     # lexer = Lexer('thompsonTools/lexer.yal')
-    lexer = Lexer('thompsonTools/lexer.yal')
     tokenizer = lexer.getTokens()
     lexer.fixRegex()
     for token in lexer.tokens:
