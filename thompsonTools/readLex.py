@@ -157,9 +157,15 @@ class Lexer:
                     else:
                         token.regex += '|'.join(tokens_list)
                 else:
-                    start, end = token.regex[1:-1].split('-')
-                    elements = self.range_maker(start, end)
-                    token.regex = '|'.join(elements) 
+                    if '-' in token.regex:
+                        start, end = token.regex[1:-1].split('-')
+                        elements = self.range_maker(start, end)
+                        token.regex = '|'.join(elements) 
+                    else:
+                        if token.regex.startswith("['") and token.regex.endswith("']"):
+                            token.regex = token.regex[2:-2]
+                        elif token.regex.startswith('[') and token.regex.endswith(']'):
+                            token.regex = token.regex[1:-1]
 
 
     
