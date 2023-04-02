@@ -119,8 +119,7 @@ class Lexer:
         tokens = self.tokens
         for token in tokens:
             if token.regex.startswith('[') and token.regex.endswith(']'):
-                
-                
+                # Si las comillas no estan balanceadas
                 if token.regex.count("'") % 2 != 0:
                     raise Exception("Comillas no balanceadas")
                 
@@ -158,6 +157,8 @@ class Lexer:
                         token.regex += '|'.join(tokens_list)
                 else:
                     if '-' in token.regex:
+                        if token.regex.count('-') > 1:
+                            raise Exception("Formato de regex incorrecto")
                         start, end = token.regex[1:-1].split('-')
                         elements = self.range_maker(start, end)
                         token.regex = '|'.join(elements) 
@@ -176,5 +177,3 @@ if __name__ == '__main__':
     tokenizer = lexer.getTokens()
     lexer.change_range_format()
     aa = 0
-    # for token in lexer.tokens:
-    #     print(token.name, token.regex)
