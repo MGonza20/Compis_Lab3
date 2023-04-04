@@ -7,4 +7,4 @@ let letter = ['A'-'C''a'-'c']
 let digit = ['0'-'2']
 let digits = digit+
 let id = letter(letter|digit)*
-let number = digits['*''/']?('E'['+''-']?digits)?
+let number = digits(.digits)?('E'['+''-']?digits)?

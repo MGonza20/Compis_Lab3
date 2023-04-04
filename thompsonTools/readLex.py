@@ -185,7 +185,7 @@ class Lexer:
                                 keys = [tk.name for tk in tokens]
                                 if ck in keys:
                                     i = j -1
-                                    new_regex += check
+                                    new_regex += ck
                                 else:
                                     new_regex += f'({str(ord(token.regex[i]))})'
                         else:
@@ -207,6 +207,12 @@ class Lexer:
                     else:
                         new_regex += token.regex[i] 
                 i += 1
+            count_parens = new_regex.count(')(') * 2
+            count_all = int((new_regex.count('(') + new_regex.count(')')) /2)
+
+            if count_parens == count_all and count_parens:
+                new_regex = f'({new_regex})'
+
             token.regex = new_regex
 
 
@@ -222,6 +228,13 @@ class Lexer:
                         tk.regex = tk.regex[:index] + token.regex + tk.regex[index + len(token.name):]
                     index = tk.regex.find(token.name, index + 1)
 
+    
+    def surround_dot(self):
+        for token in self.tokens:
+            if token.regex.count('.') > 0:
+                token.regex = token.regex.replace('.', '('+str((ord('.')))+')' )
+
+
     def concat_tokens(self):
         
         for tk in self.tokens:
@@ -235,6 +248,7 @@ if __name__ == '__main__':
     lexer = Lexer('thompsonTools/lexer.yal')
     tokenizer = lexer.getTokens()
     lexer.change_range_format()
+    lexer.surround_dot()
     lexer.replace_tokens()
 
 
