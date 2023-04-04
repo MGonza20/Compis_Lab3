@@ -1,8 +1,10 @@
 (* Ejemplo básico *)
 
-let delimitador = [' ''\t''\n'] 
-let espacioEnBlanco = delimitador+
-let digito = ['0'-'2']
-let numero = '-'?digito+
-let token1 = 0*
-let token2 = ['a'-'c''A'-'C''J'-'K']
+
+let delim = [' ''\t''\n']
+let ws = delim+
+let letter = ['A'-'C''a'-'c']
+let digit = ['0'-'2']
+let digits = digit+
+let id = letter(letter|digit)*
+let number = digits['*''/']?('E'['+''-']?digits)?

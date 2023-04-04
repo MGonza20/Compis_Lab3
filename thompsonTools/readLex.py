@@ -118,66 +118,87 @@ class Lexer:
     def change_range_format(self):
         tokens = self.tokens
         for token in tokens:
-            if token.regex.startswith('[') and token.regex.endswith(']'):
-                # Si las comillas no estan balanceadas
-                if token.regex.count("'") % 2 != 0:
-                    raise Exception("Comillas no balanceadas")
-                
-                # Si hay mas de 2 comillas consecutivas 
-                for i in range(len(token.regex) - 2):
-                    if token.regex[i] == token.regex[i+1] == [i+2]:
-                        raise Exception("Error en comillas")
-                
-                # Si hay mas de 1 comilla al inicio o al final
-                if token.regex[:-1].endswith("''") or token.regex[1:].startswith("''"):
-                    raise Exception("Error en comillas")
-                
-                if token.regex.count("''") > 0:
-                    if token.regex.startswith('[') and token.regex.endswith(']'):
-                        token.regex = token.regex.replace("''", "'|'")
-                        tokens_list = token.regex[1:-1].split("|")
+            new_regex = ''
+            i = 0
+            while i < len(token.regex):
+                if token.regex[i] == '[':
+                    content = ""
+                    j = i + 1
+                    while token.regex[j] != ']':
+                        content += token.regex[j]
+                        j += 1
 
-                    elements = []
-                    for i in range(len(tokens_list)):
-                        if '-' in tokens_list[i]:
-                            start, end = tokens_list[i].split('-')
-                            elements += self.range_maker(start, end)
-                    token.regex = ''
-                    if elements:    
-                        token.regex += '|'.join(elements)
-                        more = False
-                        add_list = []
-                        for el in tokens_list:
-                            if el not in elements and '-' not in el:
-                                add_list.append(el)
-                                more = True
-                        if more:
-                            token.regex += '|' + '|'.join(add_list)
+                    if content.count("''") > 0:
+                        # content = content[1:-1]
+                        # if "''-'" in content:
+                        #     continue
+                        content = content.replace("''", "'|'")
+                        tokens_list = content.split("|")
+
+                        elements = []
+                        for k in range(len(tokens_list)):
+                            if tokens_list[k] == "'-'":
+                                continue
+                            elif '-' in tokens_list[k]:
+                                start, end = tokens_list[k].split('-')
+                                elements += self.range_maker(start, end)
+
+                        if elements:
+                            content = '|'.join(elements)
+                            more = False
+                            add_list = []
+                            for el in tokens_list:
+                                if el not in elements and '-' not in el:
+                                    add_list.append(el)
+                                    more = True
+                            if more:
+                                content += '|' + '|'.join(add_list)
+                        else:
+                            content = '|'.join(tokens_list)
+
                     else:
-                        token.regex += '|'.join(tokens_list)
+                        if '-' in content:
+                            if content.count('-') > 1:
+                                raise Exception("Formato de regex incorrecto")
+                            start, end = content.split('-')
+                            elements = self.range_maker(start, end)
+                            content = '|'.join(elements)
+                        else:
+                            if content.startswith("['") and content.endswith("']"):
+                                content = content[2:-2]
+                            elif content.startswith('[') and content.endswith(']'):
+                                content = content[1:-1]
+
+                    new_regex += '(' + content + ')'
+                    i = j
                 else:
-                    if '-' in token.regex:
-                        if token.regex.count('-') > 1:
-                            raise Exception("Formato de regex incorrecto")
-                        start, end = token.regex[1:-1].split('-')
-                        elements = self.range_maker(start, end)
-                        token.regex = '|'.join(elements) 
-                    else:
-                        if token.regex.startswith("['") and token.regex.endswith("']"):
-                            token.regex = token.regex[2:-2]
-                        elif token.regex.startswith('[') and token.regex.endswith(']'):
-                            token.regex = token.regex[1:-1]
+                    new_regex += token.regex[i]
+                i += 1
+            token.regex = new_regex
+
+
+    def surround_dot(self):
+        for token in self.tokens:
+            if '.' in token.regex:
+                token.regex = token.regex.replace('.', "'.'")
+
 
     def replace_tokens(self):
         for tk in self.tokens:
             for token in self.tokens:
-                if token.name in tk.regex:
-                    tk.regex = tk.regex.replace(token.name, '('+token.regex+')')
-    
+                index = tk.regex.find(token.name)
+                while index != -1:
+                    right_side = (index + len(token.name) == len(tk.regex) or not ((tk.regex[index + len(token.name)])).isalnum()) 
+
+                    if right_side:
+                        tk.regex = tk.regex[:index] + token.regex + tk.regex[index + len(token.name):]
+                    index = tk.regex.find(token.name, index + 1)
+
     
 if __name__ == '__main__':
     lexer = Lexer('thompsonTools/lexer.yal')
     tokenizer = lexer.getTokens()
     lexer.change_range_format()
+    lexer.surround_dot()
     lexer.replace_tokens()
     aa = 0
