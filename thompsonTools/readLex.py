@@ -102,13 +102,14 @@ class Lexer:
         if start.isalpha() and end.isalpha():
             if ord(start) > ord(end):
                 raise Exception("Rango incorrecto")
-            elements = [chr(i) for i in range(ord(start), ord(end) + 1)]
+            elements = [str(i) for i in range(ord(start), ord(end) + 1)]
+            aaa = 123
 
         elif start.isdigit() and end.isdigit():
             start, end = int(start), int(end)
             if start > end:
                 raise Exception("Rango incorrecto")
-            elements = [str(i) for i in range(start, end + 1)]
+            elements = [str(ord(str(i))) for i in range(start, end + 1)]
         else:
             raise Exception("Formato de regex incorrecto")
 
@@ -129,9 +130,6 @@ class Lexer:
                         j += 1
 
                     if content.count("''") > 0:
-                        # content = content[1:-1]
-                        # if "''-'" in content:
-                        #     continue
                         content = content.replace("''", "'|'")
                         tokens_list = content.split("|")
 
@@ -154,7 +152,8 @@ class Lexer:
                             if more:
                                 content += '|' + '|'.join(add_list)
                         else:
-                            content = '|'.join(tokens_list)
+                            ord_tokens = [str(ord(el[1])) for el in tokens_list]
+                            content = '|'.join(ord_tokens)
 
                     else:
                         if '-' in content:
@@ -172,9 +171,39 @@ class Lexer:
                     new_regex += '(' + content + ')'
                     i = j
                 else:
-                    new_regex += token.regex[i]
+                    if token.regex[i].isalnum():
+                        if i > 0 and i < len(token.regex) - 1:
+                            if token.regex[i - 1] == "'" and token.regex[i + 1] == "'":
+                                new_regex += f'({str(ord(token.regex[i]))})'
+                                i += 1
+                            else:
+                                new_regex += token.regex[i]
+                        else:
+                            check = ""
+                            j = i
+
+                            while token.regex[j] not in ['+', '*', '?', '(', ')', '['] and j < len(token.regex) - 1:
+                                whatt = token.regex[j]
+                                check += token.regex[j]
+                                j += 1
+                            keys = [tk.name for tk in tokens]
+                            if check in keys:
+                                new_regex += token.regex[i]
+                            else:
+                                new_regex += f'({str(ord(token.regex[i]))})'
+                    elif token.regex[i] == "'":
+                        i += 1
+                        continue
+                    else:
+                        new_regex += token.regex[i] 
                 i += 1
             token.regex = new_regex
+
+
+
+                #     elif token.regex[i] == "'":
+                #         i +=  1
+                # token.regex = new_regex
 
 
     def surround_dot(self):
