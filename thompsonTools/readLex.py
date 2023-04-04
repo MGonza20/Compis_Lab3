@@ -1,4 +1,4 @@
-
+from Format import Format
 
 class Token:
         def __init__(self, name):
@@ -177,18 +177,28 @@ class Lexer:
                                 new_regex += f'({str(ord(token.regex[i]))})'
                                 i += 1
                             else:
-                                new_regex += token.regex[i]
+                                ck = ""
+                                j = i
+                                while token.regex[j] not in ['+', '*', '?', '(', ')', '[', '|'] and j < len(token.regex) - 1:
+                                    ck += token.regex[j]
+                                    j += 1
+                                keys = [tk.name for tk in tokens]
+                                if ck in keys:
+                                    i = j -1
+                                    new_regex += check
+                                else:
+                                    new_regex += f'({str(ord(token.regex[i]))})'
                         else:
                             check = ""
                             j = i
-
-                            while token.regex[j] not in ['+', '*', '?', '(', ')', '['] and j < len(token.regex) - 1:
-                                whatt = token.regex[j]
+                            while token.regex[j] not in ['+', '*', '?', '(', ')', '[', '|'] and j < len(token.regex) - 1:
                                 check += token.regex[j]
                                 j += 1
                             keys = [tk.name for tk in tokens]
                             if check in keys:
-                                new_regex += token.regex[i]
+                                i = j -1
+                                new_regex += check
+                                # new_regex += token.regex[i]
                             else:
                                 new_regex += f'({str(ord(token.regex[i]))})'
                     elif token.regex[i] == "'":
@@ -199,17 +209,6 @@ class Lexer:
                 i += 1
             token.regex = new_regex
 
-
-
-                #     elif token.regex[i] == "'":
-                #         i +=  1
-                # token.regex = new_regex
-
-
-    def surround_dot(self):
-        for token in self.tokens:
-            if '.' in token.regex:
-                token.regex = token.regex.replace('.', "'.'")
 
 
     def replace_tokens(self):
@@ -223,11 +222,20 @@ class Lexer:
                         tk.regex = tk.regex[:index] + token.regex + tk.regex[index + len(token.name):]
                     index = tk.regex.find(token.name, index + 1)
 
+    def concat_tokens(self):
+        
+        for tk in self.tokens:
+            fff  = Format(tk.regex)
+            fff.concat()
+
+            
+
     
 if __name__ == '__main__':
     lexer = Lexer('thompsonTools/lexer.yal')
     tokenizer = lexer.getTokens()
     lexer.change_range_format()
-    lexer.surround_dot()
     lexer.replace_tokens()
+
+
     aa = 0
