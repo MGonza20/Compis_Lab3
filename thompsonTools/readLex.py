@@ -174,8 +174,8 @@ class Lexer:
                     if token.regex[i].isalnum():
                         if i > 0 and i < len(token.regex) - 1:
                             if token.regex[i - 1] == "'" and token.regex[i + 1] == "'":
-                                new_regex += f'({token.regex[i]})'
-                                i += 1
+                                new_regex += f'{token.regex[i]}'
+                                # i += 1
                             else:
                                 ck = ""
                                 j = i
@@ -200,9 +200,9 @@ class Lexer:
                                 new_regex += check
                             else:
                                 new_regex += f'({token.regex[i]})'
-                    elif token.regex[i] == "'":
-                        i += 1
-                        continue
+                    # elif token.regex[i] == "'":
+                    #     i += 1
+                    #     continue
                     else:
                         new_regex += token.regex[i] 
                 i += 1
