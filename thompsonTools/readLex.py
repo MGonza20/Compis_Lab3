@@ -250,16 +250,17 @@ if __name__ == '__main__':
     lexer.surround_dot()
     lexer.replace_tokens()
 
-    # for token in lexer.tokens:
-    #     ff = Format(token.regex)
-        # ff.idempotenciesApp()
-        # ff.positiveId()
-        # ff.zeroOrOneId()
-
     for token in lexer.tokens:
         ff = Format(token.regex)
-        token.regex = ff.concat()
-        aa = 12
+        # token.regex = ff.idempotenciesApp()
+        token.regex = ff.positiveId(token.regex)
+        token.regex = ff.zeroOrOneId(token.regex)
+        # token.regex = ff.concat(token.regex)
+
+    # for token in lexer.tokens:
+    #     ff = Format(token.regex)
+    #     token.regex = ff.concat()
+    #     aa = 12
 
 
     aa = 0

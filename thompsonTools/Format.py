@@ -20,11 +20,18 @@ class Format:
         self.regex = regexStr
 
 
-    def positiveId(self):
-        expression = self.regex
-        while '+' in expression:
-            for i in range(len(expression)):
+    def positiveId(self, regexx):
+        expression = regexx
+        count_plus = expression.count('+')
+        count_plus_lit = expression.count("'+'")
+        count_t = count_plus - count_plus_lit
+        while count_t > 0:
 
+            count_plus = expression.count('+')
+            count_plus_lit = expression.count("'+'")
+            count_t = count_plus - count_plus_lit
+            
+            for i in range(len(expression)):
                 if expression[i] == '+':
                     if expression[i-1] == ')':
                         j = i-2
@@ -45,12 +52,20 @@ class Format:
                         after = expression[i+1:]
                         middle = expression[i-1]*2
                         expression = f'{before}{middle}*{after}'    
-            self.regex = expression
+        return expression
 
     
-    def zeroOrOneId(self):
-        expression = self.regex
-        while '?' in expression:
+    def zeroOrOneId(self, regexx):
+        expression = regexx
+        count_q = expression.count('?')
+        count_q_lit = expression.count("'?'")
+        count_t = count_q - count_q_lit
+        while count_t > 0:
+
+            count_q = expression.count('?')
+            count_q_lit = expression.count("'?'")
+            count_t = count_q - count_q_lit
+
             for i in range(len(expression)):
 
                 if expression[i] == '?':
@@ -73,46 +88,33 @@ class Format:
                         after = expression[i+1:]
                         middle = expression[i-1]
                         expression = f'{before}({middle}|ε){after}'    
-            self.regex = expression
+        return expression
 
 
-    def concat(self):
+    def concat(self, regexx):
         newRegex, ops = "", list(self.sims.keys())
         ops.remove('(')
 
         i = 0
-        while i < len(self.regex):
-            # Caracter actual es val
-            val = self.regex[i]
-            if i + 2 < len(self.regex):
-                if self.regex[i] == "'" and self.regex[i + 2] == "'":
-                    val = self.regex[i + 1]
+        while i < len(regexx):
+            val = regexx[i]
+            if i + 2 < len(regexx):
+                if regexx[i] == "'" and regexx[i + 2] == "'":
+                    val = regexx[i + 1]
                     val = str(ord(val))
                     i += 2
                 elif val.isalnum():
                     val = str(ord(val))
-            if i + 1 < len(self.regex):
-                # Caracter siguiente es val_p1
-                val_p1 = self.regex[i + 1]
+            if i + 1 < len(regexx):
+                val_p1 = regexx[i + 1]
                 newRegex += val
-
-                # Validacion No. 1
-                # Si el operador actual no es un parentesis que abre
-                # y el siguiente no es un parentesis que cierra
-
-                # Validacion No. 2
-                # Si el carater actual no es un operador binario
-                # o no contiene al caracter de la izquierda
-
-                # Validacion No. 3
-                # Si los operadores no contienen al caracter de la derecha
 
                 if val != '(' and val_p1 != ')' and val != '|' and val_p1 not in ops:
                     newRegex += '.'
 
             i += 1
 
-        newRegex += self.regex[-1]
+        newRegex += regexx[-1]
         return newRegex
 
 
