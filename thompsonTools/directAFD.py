@@ -69,27 +69,31 @@ class AFD:
                         l.parent = newSymC
                         r.parent = newSymC
                         tree.append(newSymC)
-            if regex[i].isalnum() or regex[i] == '#':
-                if i+1 < len(regex) and regex[i+1] == '*':
-                    if regex[i] != 'ε':
-                        alnumNode = Node(regex[i], no=enum)
-                        kleeneNode = Node(regex[i+1], left=alnumNode)
+            if regex[i].isalnum():
+                if i+2+1 < len(regex) and regex[i+2+1] == '*':
+                    if regex[i] != '949':
+                        alnumNode = Node(regex[i]+regex[i+1]+regex[i+2], no=enum)
+                        kleeneNode = Node(regex[i+2+1], left=alnumNode)
                         alnumNode.parent = kleeneNode
                         tree.append(kleeneNode)
                         enum += 1
+                        i += 2
                     else:
-                        alnumNode = Node(regex[i])
-                        kleeneNode = Node(regex[i+1], left=alnumNode)
+                        alnumNode = Node(regex[i] + regex[i+1] + regex[i+2])
+                        kleeneNode = Node(regex[i+2+1], left=alnumNode)
                         alnumNode.parent = kleeneNode
                         tree.append(kleeneNode)
+                        i += 2
                 else:
-                    if regex[i] != 'ε':
-                        alnumNode = Node(regex[i], no=enum)
+                    if regex[i] != '949':
+                        alnumNode = Node(regex[i] + regex[i+1] + regex[i+2], no=enum)
                         tree.append(alnumNode)
                         enum += 1
+                        i += 2
                     else:
-                        alnumNode = Node(regex[i])
+                        alnumNode = Node(regex[i] + regex[i+1] + regex[i+2])
                         tree.append(alnumNode)
+                        i += 2
             elif regex[i] == '(':
                 subexpr_stack.append(tree)  
                 tree = []  
