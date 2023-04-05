@@ -80,20 +80,28 @@ class Format:
         newRegex, ops = "", list(self.sims.keys())
         ops.remove('(')
 
-        for i in range(len(self.regex)):
+        i = 0
+        while i < len(self.regex):
             # Caracter actual es val
             val = self.regex[i]
-            if i+1 < len(self.regex):
+            if i + 2 < len(self.regex):
+                if self.regex[i] == "'" and self.regex[i + 2] == "'":
+                    val = self.regex[i + 1]
+                    val = str(ord(val))
+                    i += 2
+                elif val.isalnum():
+                    val = str(ord(val))
+            if i + 1 < len(self.regex):
                 # Caracter siguiente es val_p1
-                val_p1 = self.regex[i+1]
+                val_p1 = self.regex[i + 1]
                 newRegex += val
 
                 # Validacion No. 1
                 # Si el operador actual no es un parentesis que abre
                 # y el siguiente no es un parentesis que cierra
-                
+
                 # Validacion No. 2
-                # Si el carater actual no es un operador binario 
+                # Si el carater actual no es un operador binario
                 # o no contiene al caracter de la izquierda
 
                 # Validacion No. 3
@@ -101,6 +109,8 @@ class Format:
 
                 if val != '(' and val_p1 != ')' and val != '|' and val_p1 not in ops:
                     newRegex += '.'
+
+            i += 1
 
         newRegex += self.regex[-1]
         return newRegex
