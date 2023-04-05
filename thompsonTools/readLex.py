@@ -255,7 +255,7 @@ if __name__ == '__main__':
         # token.regex = ff.idempotenciesApp()
         token.regex = ff.positiveId(token.regex)
         token.regex = ff.zeroOrOneId(token.regex)
-        # token.regex = ff.concat(token.regex)
+        token.regex = ff.concat(token.regex)
 
     # for token in lexer.tokens:
     #     ff = Format(token.regex)

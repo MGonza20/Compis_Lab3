@@ -102,9 +102,17 @@ class Format:
                 if regexx[i] == "'" and regexx[i + 2] == "'":
                     val = regexx[i + 1]
                     val = str(ord(val))
+                    if len(val) == 2:
+                        val = '0' + val
                     i += 2
                 elif val.isalnum():
                     val = str(ord(val))
+                    if len(val) == 2:
+                        val = '0' + val
+            elif regexx[i].isalnum():
+                val = str(ord(val)) 
+                if len(val) == 2:
+                    val = '0' + val
             if i + 1 < len(regexx):
                 val_p1 = regexx[i + 1]
                 newRegex += val
