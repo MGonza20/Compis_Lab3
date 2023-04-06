@@ -175,7 +175,8 @@ class Lexer:
                         if i > 0 and i < len(token.regex) - 1:
                             if token.regex[i - 1] == "'" and token.regex[i + 1] == "'":
                                 new_regex += f'{token.regex[i]}'
-                                # i += 1
+                                new_regex = new_regex.replace("'" + token.regex[i], '(' + token.regex[i] + ')')
+                                i += 1
                             else:
                                 ck = ""
                                 j = i
@@ -200,9 +201,6 @@ class Lexer:
                                 new_regex += check
                             else:
                                 new_regex += f'({token.regex[i]})'
-                    # elif token.regex[i] == "'":
-                    #     i += 1
-                    #     continue
                     else:
                         new_regex += token.regex[i] 
                 i += 1
@@ -211,6 +209,17 @@ class Lexer:
 
             if count_parens == count_all and count_parens:
                 new_regex = f'({new_regex})'
+
+            for i in range(len(list(new_regex))):
+                    elem = ""
+                    if new_regex[i] == '(' and new_regex[i + 1] != "(":
+                        while new_regex[i] != ')':
+                            elem += new_regex[i]
+                            i += 1
+                        elem += new_regex[i]
+
+                        if len(elem) == 3:
+                            new_regex = new_regex.replace(elem, "'"+elem[1]+"'")
 
             token.regex = new_regex
 
