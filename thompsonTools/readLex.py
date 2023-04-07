@@ -143,17 +143,6 @@ class Lexer:
 
                         if elements:
                             content = '|'.join(elements)
-                            more = False
-                            add_list = []
-                            for el in tokens_list:
-                                if el not in elements and '-' not in el:
-                                    add_list.append(el)
-                                    more = True
-                            if more:
-                                content += '|' + '|'.join(add_list)
-                        else:
-                            ord_tokens = [el for el in tokens_list]
-                            content = '|'.join(ord_tokens)
 
                     else:
                         if '-' in content:
@@ -162,54 +151,28 @@ class Lexer:
                             start, end = content.split('-')
                             elements = self.range_maker(start, end)
                             content = '|'.join(elements)
-                        else:
-                            if content.startswith("['") and content.endswith("']"):
-                                content = content[2:-2]
-                            elif content.startswith('[') and content.endswith(']'):
-                                content = content[1:-1]
 
                     new_regex += '(' + content + ')'
                     i = j
                 else:
                     if token.regex[i].isalnum():
-                        if i > 0 and i < len(token.regex) - 1:
-                            if token.regex[i - 1] == "'" and token.regex[i + 1] == "'":
-                                new_regex += f'{token.regex[i]}'
-                                # i += 1
-                            else:
-                                ck = ""
-                                j = i
-                                while token.regex[j] not in ['+', '*', '?', '(', ')', '[', '|'] and j < len(token.regex) - 1:
-                                    ck += token.regex[j]
-                                    j += 1
-                                keys = [tk.name for tk in tokens]
-                                if ck in keys:
-                                    i = j -1
-                                    new_regex += ck
-                                else:
-                                    new_regex += f'({token.regex[i]})'
+                        check = ""
+                        j = i
+                        while token.regex[j] not in ['+', '*', '?', '(', ')', '[', '|'] and j < len(token.regex) - 1:
+                            check += token.regex[j]
+                            j += 1
+                        keys = [tk.name for tk in tokens]
+                        if check in keys:
+                            i = j - 1
+                            new_regex += check
                         else:
-                            check = ""
-                            j = i
-                            while token.regex[j] not in ['+', '*', '?', '(', ')', '[', '|'] and j < len(token.regex) - 1:
-                                check += token.regex[j]
-                                j += 1
-                            keys = [tk.name for tk in tokens]
-                            if check in keys:
-                                i = j -1
-                                new_regex += check
-                            else:
-                                new_regex += f'({token.regex[i]})'
-                    # elif token.regex[i] == "'":
-                    #     i += 1
-                    #     continue
+                            new_regex += token.regex[i]
                     else:
                         new_regex += token.regex[i] 
                 i += 1
-            count_parens = new_regex.count(')(') * 2
             count_all = int((new_regex.count('(') + new_regex.count(')')) /2)
 
-            if count_parens == count_all and count_parens:
+            if not count_all or new_regex[-1] in ['+', '*', '?']:
                 new_regex = f'({new_regex})'
 
             token.regex = new_regex
