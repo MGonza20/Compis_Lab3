@@ -96,6 +96,7 @@ class AFD:
                     else:
                         alnumNode = Node(regex[i:i+3])
                         tree.append(alnumNode)
+                        i += 2
             elif regex[i] == '(':
                 subexpr_stack.append(tree)  
                 tree = []  
@@ -508,14 +509,14 @@ class AFD:
 
 
 
-def printVisualTree(tree, level=0):
-    if tree:
-        printVisualTree(tree.right, level+1)
-        if tree.no or tree.no == 0:
-            print('  '*(level*3) + str(tree.symbol) + str(tree.no) + ' ' + str(tree.lastpos))
-        else:
-            print('  '*(level*3) + str(tree.symbol) + ' ' + str(tree.lastpos))
-        printVisualTree(tree.left, level+1)
+    def printVisualTree(self, tree, level=0):
+        if tree:
+            self.printVisualTree(tree.right, level+1)
+            if tree.no or tree.no == 0:
+                print('  '*(level*3) + str(tree.symbol))
+            else:
+                print('  '*(level*3) + str((tree.symbol)))
+            self.printVisualTree(tree.left, level+1)
 
 
 def printPostOrder(tree):
