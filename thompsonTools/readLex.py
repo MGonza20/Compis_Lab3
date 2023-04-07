@@ -151,32 +151,27 @@ class Lexer:
                             start, end = content.split('-')
                             elements = self.range_maker(start, end)
                             content = '|'.join(elements)
-
                     new_regex += '(' + content + ')'
                     i = j
                 else:
-                    if token.regex[i].isalnum():
-                        check = ""
-                        j = i
-                        while token.regex[j] not in ['+', '*', '?', '(', ')', '[', '|'] and j < len(token.regex) - 1:
-                            check += token.regex[j]
-                            j += 1
-                        keys = [tk.name for tk in tokens]
-                        if check in keys:
-                            i = j - 1
-                            new_regex += check
-                        else:
-                            new_regex += token.regex[i]
+                    check = ""
+                    j = i
+                    while token.regex[j] not in ['+', '*', '?']:
+                        check += token.regex[j]
+                        j += 1
+                    keys = [tk.name for tk in tokens]
+                    if check in keys:
+                        i = j - 1
+                        new_regex += check
                     else:
-                        new_regex += token.regex[i] 
+                        new_regex += token.regex[i]
                 i += 1
-            count_all = int((new_regex.count('(') + new_regex.count(')')) /2)
 
+            count_all = int((new_regex.count('(') + new_regex.count(')')) /2)
             if not count_all or new_regex[-1] in ['+', '*', '?']:
                 new_regex = f'({new_regex})'
 
             token.regex = new_regex
-
 
 
     def replace_tokens(self):
@@ -195,16 +190,7 @@ class Lexer:
         for token in self.tokens:
             if token.regex.count('.') > 0:
                 token.regex = token.regex.replace('.', "'.'" )
-
-
-    def concat_tokens(self):
-        
-        for tk in self.tokens:
-            fff  = Format(tk.regex)
-            fff.concat()
-
             
-
     
 if __name__ == '__main__':
     lexer = Lexer('thompsonTools/lexer.yal')
@@ -215,7 +201,6 @@ if __name__ == '__main__':
 
     for token in lexer.tokens:
         ff = Format(token.regex)
-        # token.regex = ff.idempotenciesApp()
         token.regex = ff.positiveId(token.regex)
         token.regex = ff.zeroOrOneId(token.regex)
         token.regex = ff.concat(token.regex)
