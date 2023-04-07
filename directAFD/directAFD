@@ -1,11 +1,9 @@
 digraph {
-	A -> B [label=032 dir=forward]
-	A -> B [label=009 dir=forward]
-	A -> B [label=010 dir=forward]
-	B -> B [label=032 dir=forward]
-	B -> B [label=009 dir=forward]
-	B -> B [label=010 dir=forward]
-	A [color=green shape=circle style=filled]
-	B [shape=doublecircle]
+	A -> B [label=069 dir=forward]
+	B -> C [label=043 dir=forward]
+	B -> C [label=045 dir=forward]
+	A [color=green shape=doublecircle style=filled]
+	B
+	C
 	rankdir=LR
 }

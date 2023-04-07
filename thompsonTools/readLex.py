@@ -154,7 +154,42 @@ class Lexer:
         for token in self.tokens:
             if token.regex.count('.') > 0:
                 token.regex = token.regex.replace('.', "'.'" )
-            
+    
+    def remove_double_parentheses(self, token):
+        i = 0
+        output = ""
+        token = "((0|1|2)(0|1|2)*)('.'((0|1|2)(0|1|2)*))?('E'('+'|'-')?((0|1|2)(0|1|2)*))?#"
+        while i < len(token):
+            if token[i] == '(':
+                content = "("
+                count_open = 1
+                count_control = 1
+                i += 1
+                while count_open != 0:
+                    if token[i] == '(':
+                        count_open += 1
+                        count_control += 1
+                    elif token[i] == ')':
+                        count_open -= 1
+                    content += token[i]
+                    i += 1
+                
+                start = content[:count_control]
+                end = content[-count_control:]
+                opp = '('*count_control
+                clp = ')'*count_control
+                if start == opp and end == clp and count_control > 1: 
+                    output += content[count_control-1:-count_control+1]
+                else:
+                    output += content
+                
+            else:
+                output += token[i]
+                i += 1
+        return output
+
+
+
     
 if __name__ == '__main__':
     lexer = Lexer('thompsonTools/lexer.yal')
@@ -166,10 +201,16 @@ if __name__ == '__main__':
     for token in lexer.tokens:
         ff = Format(token.regex)
         token.regex = ff.positiveId(token.regex + '#')
+        token.regex = lexer.remove_double_parentheses(token.regex)
         token.regex = ff.zeroOrOneId(token.regex)
+        token.regex = lexer.remove_double_parentheses(token.regex)
         token.regex = ff.concat(token.regex)
+        token.regex = lexer.remove_double_parentheses(token.regex)
+        # afdd = AFD(token)
+        # afdd.generateAFD()
+        aa = 0
 
-    afdd = AFD(lexer.tokens[1])
+    afdd = AFD(lexer.tokens[6])
     afdd.generateAFD()
 
 
