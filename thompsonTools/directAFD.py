@@ -1,4 +1,5 @@
 
+
 from Format import Format
 import os
 os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz/bin'    
@@ -38,10 +39,10 @@ class AFD:
 
     def augmentRegex(self):
         hashRegex = Format(self.regex + '#')
-        hashRegex.idempotenciesApp()
-        hashRegex.positiveId()
-        hashRegex.zeroOrOneId()
-        return hashRegex.concat()
+        # hashRegex.idempotenciesApp()
+        a = hashRegex.positiveId(self.regex)
+        b = hashRegex.zeroOrOneId(a)
+        return hashRegex.concat(b)
     
     def syntaxTree(self):
         tree = []
@@ -50,7 +51,8 @@ class AFD:
         regex = self.augmentRegex()
         subexpr_stack = [] 
 
-        for i in range(len(regex)):
+        i = 0
+        while i < len(regex):
             rrrr = regex[i]
             if len(toDo) > 0:
                 if toDo[-1] == '|':
@@ -69,31 +71,31 @@ class AFD:
                         l.parent = newSymC
                         r.parent = newSymC
                         tree.append(newSymC)
-            if regex[i].isalnum():
+            if regex[i].isalnum() or regex[i:i+3] == '035':
                 if i+2+1 < len(regex) and regex[i+2+1] == '*':
-                    if regex[i] != '949':
-                        alnumNode = Node(regex[i]+regex[i+1]+regex[i+2], no=enum)
+                    if regex[i:i+3] != '949':
+                        alnumNode = Node(regex[i:i+3], no=enum)
                         kleeneNode = Node(regex[i+2+1], left=alnumNode)
                         alnumNode.parent = kleeneNode
                         tree.append(kleeneNode)
                         enum += 1
                         i += 2
                     else:
-                        alnumNode = Node(regex[i] + regex[i+1] + regex[i+2])
+                        alnumNode = Node(regex[i:i+3])
                         kleeneNode = Node(regex[i+2+1], left=alnumNode)
                         alnumNode.parent = kleeneNode
                         tree.append(kleeneNode)
                         i += 2
                 else:
-                    if regex[i] != '949':
-                        alnumNode = Node(regex[i] + regex[i+1] + regex[i+2], no=enum)
+                    ehh = regex[i:i+3]
+                    if regex[i:i+3] != '949':
+                        alnumNode = Node(regex[i:i+3], no=enum)
                         tree.append(alnumNode)
                         enum += 1
                         i += 2
                     else:
-                        alnumNode = Node(regex[i] + regex[i+1] + regex[i+2])
+                        alnumNode = Node(regex[i:i+3])
                         tree.append(alnumNode)
-                        i += 2
             elif regex[i] == '(':
                 subexpr_stack.append(tree)  
                 tree = []  
@@ -110,6 +112,8 @@ class AFD:
             elif regex[i] == '|' or regex[i] == '.':
                 if len(tree) < 2:
                     toDo.append(regex[i])
+            i += 1
+
         while toDo and tree:
             if toDo[-1] == '|':
                 if len(tree) > 1:
@@ -134,7 +138,7 @@ class AFD:
         if tree:
             self.anulable(tree.left)
             self.anulable(tree.right)
-            if tree.symbol == 'ε':
+            if tree.symbol == '949':
                 tree.anulable = True
             elif tree.symbol.isalnum():
                 tree.anulable = False
@@ -151,7 +155,7 @@ class AFD:
         if tree:
             self.firstPosMethod(tree.left)
             self.firstPosMethod(tree.right)
-            if tree.symbol.isalnum() and tree.no or tree.no == 0 or tree.symbol == '#':
+            if tree.symbol.isalnum() and tree.no or tree.no == 0 or tree.symbol == '035':
                 tree.firstpos = [tree.no]
             if tree.symbol == '|':
                 tree.firstpos = tree.left.firstpos + tree.right.firstpos
@@ -169,7 +173,7 @@ class AFD:
         if tree:
             self.lastPosMethod(tree.left)
             self.lastPosMethod(tree.right)
-            if tree.symbol.isalnum() and tree.no or tree.no == 0 or tree.symbol == '#':
+            if tree.symbol.isalnum() and tree.no or tree.no == 0 or tree.symbol == '035':
                 tree.lastpos = [tree.no]
             if tree.symbol == '|':
                 tree.lastpos = tree.left.lastpos + tree.right.lastpos
@@ -230,7 +234,7 @@ class AFD:
             for elem in toDoState:
                 for elem2 in table:
                     if elem == elem2.treeNo:
-                        if elem2.symbol != '#':
+                        if elem2.symbol != '035':
                             if elem2.symbol not in symbols:
                                 symbols[elem2.symbol] = set(elem2.nextpos)
                             else:
@@ -520,17 +524,9 @@ def printPostOrder(tree):
         printPostOrder(tree.right)
         print(tree.symbol)
 
-            
 
-string = '(a|b)*abb'
-string_no_spaces = string.replace(' ', '')
-syntax = Syntax(string_no_spaces)
-if string_no_spaces and syntax.checkParenthesis() and syntax.checkDot() and not syntax.checkMultU() and syntax.checkOperator() and syntax.checkOperatorValid() and syntax.checkLastNotU():
-    afdd = AFD(string_no_spaces)
-    var = 'aaab'
-    afdd.generateAFD()
-    afdd.simulateDirectAFD_General(var)
-    afdd.generateMiniAFD()
-    afdd.simulateMiniAFD_General(var)
-else:
-    print('Cadena no valida')
+
+string = '(0|1|2)#'
+afdd = AFD(string)
+tree = afdd.syntaxTree()[0]
+printVisualTree(tree)
