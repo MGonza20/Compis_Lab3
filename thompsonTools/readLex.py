@@ -1,5 +1,5 @@
 from Format import Format
-from directAFD import directAFD
+from directAFD import AFD
 
 class Token:
         def __init__(self, name):
@@ -168,6 +168,9 @@ if __name__ == '__main__':
         token.regex = ff.positiveId(token.regex + '#')
         token.regex = ff.zeroOrOneId(token.regex)
         token.regex = ff.concat(token.regex)
+
+    afdd = AFD(lexer.tokens[1])
+    afdd.generateAFD()
 
 
 

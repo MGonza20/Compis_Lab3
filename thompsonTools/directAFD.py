@@ -48,7 +48,7 @@ class AFD:
         tree = []
         toDo = []
         enum = 1
-        regex = self.augmentRegex()
+        regex = self.regex.regex
         subexpr_stack = [] 
 
         i = 0
@@ -526,7 +526,7 @@ def printPostOrder(tree):
 
 
 
-string = '(0|1|2)#'
-afdd = AFD(string)
-tree = afdd.syntaxTree()[0]
-printVisualTree(tree)
+# string = '(0|1|2)#'
+# afdd = AFD(string)
+# tree = afdd.syntaxTree()[0]
+# afdd.generateAFD()
