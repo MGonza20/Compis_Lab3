@@ -1,4 +1,5 @@
 from Format import Format
+from directAFD import directAFD
 
 class Token:
         def __init__(self, name):
@@ -8,43 +9,6 @@ class Token:
         def __str__(self):
             return f"Token({self.name}, {self.regex})"
 
-
-class Tokenizer:
-     
-    def __init__(self, tokens):
-        self.tokens = tokens
-        self.index = 0
-    
-    def __iter__(self):
-        return self
-    
-    def __next__(self):
-        if self.index >= len(self.tokens):
-            raise StopIteration
-        token = self.tokens[self.index]
-        self.index += 1
-        return token
-    
-    def peek(self):
-        if self.index >= len(self.tokens):
-            raise StopIteration
-        return self.tokens[self.index]
-    
-    def next(self):
-        if self.index >= len(self.tokens):
-            raise StopIteration
-        token = self.tokens[self.index]
-        self.index += 1
-        return token
-    
-    def hasNext(self):
-        return self.index < len(self.tokens)
-    
-    def hasPeek(self):
-        return self.index + 1 < len(self.tokens)
-    
-    def reset(self):
-        self.index = 0
 
 class Lexer:
     def __init__(self, filename):
@@ -201,14 +165,10 @@ if __name__ == '__main__':
 
     for token in lexer.tokens:
         ff = Format(token.regex)
-        token.regex = ff.positiveId(token.regex)
+        token.regex = ff.positiveId(token.regex + '#')
         token.regex = ff.zeroOrOneId(token.regex)
         token.regex = ff.concat(token.regex)
 
-    # for token in lexer.tokens:
-    #     ff = Format(token.regex)
-    #     token.regex = ff.concat()
-    #     aa = 12
 
 
     aa = 0

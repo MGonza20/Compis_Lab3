@@ -104,15 +104,23 @@ class Format:
                     val = str(ord(val))
                     if len(val) == 2:
                         val = '0' + val
+                    elif len(val) == 1:
+                        val = '00' + val
                     i += 2
-                elif val.isalnum():
+                elif val.isalnum() or val == "#":
                     val = str(ord(val))
                     if len(val) == 2:
                         val = '0' + val
-            elif regexx[i].isalnum():
+                    elif len(val) == 1:
+                        val = '00' + val
+
+            elif regexx[i].isalnum() or regexx[i] == "#":
                 val = str(ord(val)) 
                 if len(val) == 2:
                     val = '0' + val
+                elif len(val) == 1:
+                    val = '00' + val
+                    
             if i + 1 < len(regexx):
                 val_p1 = regexx[i + 1]
                 newRegex += val
@@ -122,7 +130,14 @@ class Format:
 
             i += 1
 
-        newRegex += regexx[-1]
+        if regexx[-1] == ')' or regexx[-1] in ops:
+            newRegex += regexx[-1]
+        else:
+            if len(str(ord(regexx[-1]))) == 1:
+                newRegex += '00' + str(ord(regexx[-1]))
+            elif len(str(ord(regexx[-1]))) == 2:
+                newRegex += '0' + str(ord(regexx[-1]))
+
         return newRegex
 
 
