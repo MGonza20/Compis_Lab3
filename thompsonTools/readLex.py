@@ -65,8 +65,6 @@ class Lexer:
     def range_maker(self, start, end):
         if len(start) == 3 and len(end) == 3:
             start, end = start[1], end[1]
-        elif len(start) != 1 or len(end) != 1:
-            raise Exception("Formato de regex incorrecto")
 
         if start.isalpha() and end.isalpha():
             if ord(start) > ord(end):
@@ -91,7 +89,27 @@ class Lexer:
             new_regex = ''
             i = 0
             while i < len(token.regex):
+
+                p_left = token.regex.count("(")
+                p_right = token.regex.count(")")
+                if (p_left + p_right) % 2 != 0:
+                    raise Exception("Error: Los parentesis deben estar balanceados")
+                
+                c_left = token.regex.count("[") 
+                c_right = token.regex.count("]") 
+                if (c_left + c_right )% 2 != 0:
+                    raise Exception("Error: Los corchetes deben estar balanceados")
+
+                
                 if token.regex[i] == '[':
+                    # Si las comillas no estan balanceadas
+                    if token.regex.count("'") % 2 != 0:
+                        raise Exception("Comillas no balanceadas")
+                    
+                    # Si hay mas de 1 comilla al inicio o al final
+                    if token.regex[:-1].endswith("''") or token.regex[1:].startswith("''"):
+                        raise Exception("Error: Solo es valido 1 comilla al principio y al final")
+                
                     content = ""
                     j = i + 1
                     while token.regex[j] != ']':
@@ -223,7 +241,8 @@ class Lexer:
 
     
 if __name__ == '__main__':
-    lexer = Lexer('thompsonTools/lexer.yal')
+    # lexer = Lexer('thompsonTools/lexer.yal')
+    lexer = Lexer('lexer.yal')
     tokenizer = lexer.getTokens()
     lexer.change_range_format()
     lexer.surround_dot()
