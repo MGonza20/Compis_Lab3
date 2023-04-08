@@ -1,5 +1,10 @@
 from Format import Format
 from directAFD import AFD
+from StateAFD import StateAFD
+
+import networkx as nx
+from graphviz import Digraph
+
 
 class Token:
         def __init__(self, name):
@@ -158,7 +163,6 @@ class Lexer:
     def remove_double_parentheses(self, token):
         i = 0
         output = ""
-        # token = "((0|1|2)(0|1|2)*)('.'((0|1|2)(0|1|2)*))?('E'('+'|'-')?((0|1|2)(0|1|2)*))?#"
         while i < len(token):
             if token[i] == '(':
                 content = "("
@@ -189,6 +193,35 @@ class Lexer:
         return output
 
 
+
+    def draw_mega_afd(self, afd):
+
+        G = nx.MultiDiGraph()
+        for state in afd:
+            node_attrs = {'shape': 'circle'}
+            if state.start:
+                node_attrs.update({'color': 'green', 'style': 'filled'})
+            if state.accepting:
+                node_attrs.update({'peripheries': '2'})
+            G.add_node(str(state.name), **node_attrs)
+
+            for transition, final_dest in state.transitions.items():
+                G.add_node(str(final_dest))
+                G.add_edge(str(state.name), str(final_dest), label=str(chr(int(transition))), dir='forward')
+
+        dot = Digraph()
+        for u, v, data in G.edges(data=True):
+            dot.edge(u, v, label=data['label'], dir=data['dir'])
+        for node in G.nodes:
+            attrs = G.nodes[node]
+            dot.node(node, **attrs)
+
+        dot.attr(rankdir='LR')
+        dot.render('mega/megaautomata', format='png')
+
+    
+
+
     
 if __name__ == '__main__':
     lexer = Lexer('thompsonTools/lexer.yal')
@@ -197,28 +230,49 @@ if __name__ == '__main__':
     lexer.surround_dot()
     lexer.replace_tokens()
 
+    mega_content = []
     for token in lexer.tokens:
         ff = Format(token.regex)
         token.regex = ff.positiveId(token.regex + '#')
-        # token.regex = lexer.remove_double_parentheses(token.regex)
-        # token.regex = lexer.remove_unnecesary_parentheses(token.regex)
-
         token.regex = ff.zeroOrOneId(token.regex)
         token.regex = lexer.remove_double_parentheses(token.regex)
-        # token.regex = lexer.remove_unnecesary_parentheses(token.regex)
-
         token.regex = ff.concat(token.regex)
-        # token.regex = lexer.remove_double_parentheses(token.regex)
-        # token.regex = lexer.remove_unnecesary_parentheses(token.regex)
+        
+        afdd = AFD(token)
+        new_afd = afdd.generateAFD()
+        mega_content.append(new_afd)
 
-        # afdd = AFD(token)
-        # afdd.generateAFD()
-        # aa = 0
 
-    afdd = AFD(lexer.tokens[6])
-    st = afdd.syntaxTree()
-    afdd.printVisualTree(st[0])
-    afdd.generateAFD()
+    count = 0
+    for obj in mega_content:
+        for state in obj:
+            old_name = state.name
+            new_name = chr(65 + count)
+
+            state.name = new_name
+            for list_state in obj:
+                for transition_key, transition_value in list_state.transitions.items():
+                    if transition_value == old_name:
+                        list_state.transitions[transition_key] = new_name
+            count += 1
+
+
+    stack = []    
+    init_state = StateAFD(name='init', start=True, transitions={})
+    # auto = mega_content.pop(0)
+    for element in mega_content:
+        for state in element:
+            if state.start:
+                state.start = False
+                init_state.transitions['949'] = state.name
+                stack.append(init_state)
+            stack.append(state)
+    
+    lexer.draw_mega_afd(stack)
+    # afdd = AFD(lexer.tokens[6])
+    # st = afdd.syntaxTree()
+    # afdd.printVisualTree(st[0])
+    # afdd.generateAFD()
 
     # lexer.remove_unnecesary_parentheses()
 

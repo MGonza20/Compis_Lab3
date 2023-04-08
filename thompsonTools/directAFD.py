@@ -355,8 +355,7 @@ class AFD:
 
             for transition, final_dest in state.transitions.items():
                 G.add_node(str(final_dest))
-                if transition != '#':
-                    G.add_edge(str(state.name), str(final_dest), label=str(chr(int(transition))), dir='forward')
+                G.add_edge(str(state.name), str(final_dest), label=str(chr(int(transition))), dir='forward')
 
         dot = Digraph()
         for u, v, data in G.edges(data=True):
@@ -439,8 +438,8 @@ class AFD:
         self.genNextPosDict(treeVar)
         self.genNextPos(treeVar)
         self.tableToObj()
-        data = self.genAFD()
-        self.draw_afd(data)
+        return self.genAFD()
+        # self.draw_afd(data)
 
     
     def generateMiniAFD(self):
