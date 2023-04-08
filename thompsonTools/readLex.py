@@ -46,8 +46,32 @@ class Lexer:
         f.close()
 
         lines = [line.encode('utf-8').decode('unicode_escape') for line in lines]
-        lines = [line.strip() for line in lines if line.strip() != ""]
-        return self.remove_spaces(lines)  
+
+        lines_with_n = [n[:-1] for n in lines]
+        check_comments = [lll.split(' ') for lll in lines_with_n]  
+        for i in range(len(check_comments)):
+            
+            if 'let' in check_comments[i] and len(check_comments[i]) > 4:
+                checker = check_comments[i][3][-1]
+                if check_comments[i][3][-1] == ']' or check_comments[i][3][-1] == ')': 
+                    if check_comments[i][4] != '(*' and check_comments[i][-1] == '*)':
+                        raise Exception("Error en comentario, " + "linea " + str(i+1))
+                    elif check_comments[i][4] == '(*' and check_comments[i][-1] != '*)':
+                        raise Exception("Error en comentario, " + "linea " + str(i+1))
+                    elif check_comments[i][4] == '(*' and check_comments[i][-1] == '*)':
+                        left_idx = check_comments[i].index('(*')
+                        right_idx = check_comments[i].index('*)')
+                        check_comments[i] = check_comments[i][:left_idx] + check_comments[i][right_idx + 1:]
+                    
+            elif '(*' == check_comments[i][0][:2] and '*)' != check_comments[i][-1][-2:]:
+                raise Exception("Error en comentario, " + "linea " + str(i+1))
+            
+            elif '(*' != check_comments[i][0][:2] and '*)' == check_comments[i][-1][-2:]:
+                raise Exception("Error en comentario, " + "linea " + str(i+1))
+            
+        lines_c = [' '.join(line) for line in check_comments]
+
+        return self.remove_spaces(lines_c)  
         return lines
 
 
@@ -241,8 +265,8 @@ class Lexer:
 
     
 if __name__ == '__main__':
-    # lexer = Lexer('thompsonTools/lexer.yal')
-    lexer = Lexer('lexer.yal')
+    lexer = Lexer('thompsonTools/lexer.yal')
+    # lexer = Lexer('lexer.yal')
     tokenizer = lexer.getTokens()
     lexer.change_range_format()
     lexer.surround_dot()
