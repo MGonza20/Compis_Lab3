@@ -187,46 +187,6 @@ class Lexer:
                 output += token[i]
                 i += 1
         return output
-    
-    def remove_unnecesary_parentheses(self, token):
-        i = 0
-        output = ""
-        # token = "((' '|'\t'|'\n')(' '|'\t'|'\n')*)#"
-        while i < len(token):
-            if token[i] == '(':
-                content = "("
-                count_open = 1
-                count_control = 1
-                i += 1
-                while count_open != 0:
-                    if token[i] == '(':
-                        count_open += 1
-                        count_control += 1
-                    elif token[i] == ')':
-                        count_open -= 1
-                    content += token[i]
-                    i += 1
-                i -= 1
-                
-                aaa = token[i+1]
-                if count_control > 1:
-                    if token[i+1] not in ['+', '*', '?'] :
-                        output += content[1:-1]
-                    else:
-                        output += content
-                else:
-                    count_or = content.count('|')
-                    if count_or > 0:
-                        output += content
-                    elif token[i+1] not in ['+', '*', '?'] :
-                        output += content[1:-1]      
-                i += 1          
-            else:
-                output += token[i]
-                i += 1
-        return output
-
-
 
 
     
@@ -244,7 +204,7 @@ if __name__ == '__main__':
         # token.regex = lexer.remove_unnecesary_parentheses(token.regex)
 
         token.regex = ff.zeroOrOneId(token.regex)
-        # token.regex = lexer.remove_double_parentheses(token.regex)
+        token.regex = lexer.remove_double_parentheses(token.regex)
         # token.regex = lexer.remove_unnecesary_parentheses(token.regex)
 
         token.regex = ff.concat(token.regex)

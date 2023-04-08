@@ -262,6 +262,7 @@ class AFD:
                 for key, transition in st.transitions.items():
                     if transition == set(state.name):
                         st.transitions[key] = chr(65+count)
+            
             state.name = chr(65+count)
             count += 1
 
@@ -343,16 +344,20 @@ class AFD:
 
     def draw_afd(self, afd):
 
-        G = nx.MultiGraph()
+        G = nx.MultiDiGraph()
         for state in afd:
+            node_attrs = {'shape': 'circle'}
             if state.start:
-                G.add_node(str(state.name), color='green', style='filled', shape='circle')
+                node_attrs.update({'color': 'green', 'style': 'filled'})
             if state.accepting:
-                G.add_node(str(state.name), shape='doublecircle')
-            for k, v in state.transitions.items():
-                G.add_node(v)
-                G.add_edge(str(state.name), str(v), label=k, dir='forward')
-        
+                node_attrs.update({'peripheries': '2'})
+            G.add_node(str(state.name), **node_attrs)
+
+            for transition, final_dest in state.transitions.items():
+                G.add_node(str(final_dest))
+                if transition != '#':
+                    G.add_edge(str(state.name), str(final_dest), label=str(chr(int(transition))), dir='forward')
+
         dot = Digraph()
         for u, v, data in G.edges(data=True):
             dot.edge(u, v, label=data['label'], dir=data['dir'])
