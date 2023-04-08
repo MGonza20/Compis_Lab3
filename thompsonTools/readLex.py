@@ -4,6 +4,7 @@ from StateAFD import StateAFD
 
 import networkx as nx
 from graphviz import Digraph
+import sys
 
 
 class Token:
@@ -50,28 +51,23 @@ class Lexer:
 
         lines_with_n = [n[:-1] for n in lines]
         check_comments = [lll.split(' ') for lll in lines_with_n]  
+
+        joined = [' '.join(line) for line in check_comments]
+        for lj in joined:
+            if '(*' in lj and '*)' not in lj:
+                raise Exception("Error en comentario, linea "+ str(joined.index(lj)+1))
+            elif '(*' not in lj and '*)' in lj:
+                raise Exception("Error en comentario, linea "+ str(joined.index(lj)+1))
+
         for i in range(len(check_comments)):
-            
             if 'let' in check_comments[i] and len(check_comments[i]) > 4:
-                checker = check_comments[i][3][-1]
                 if check_comments[i][3][-1] == ']' or check_comments[i][3][-1] == ')': 
-                    if check_comments[i][4] != '(*' and check_comments[i][-1] == '*)':
-                        raise Exception("Error en comentario, " + "linea " + str(i+1))
-                    elif check_comments[i][4] == '(*' and check_comments[i][-1] != '*)':
-                        raise Exception("Error en comentario, " + "linea " + str(i+1))
-                    elif check_comments[i][4] == '(*' and check_comments[i][-1] == '*)':
+                    if check_comments[i][4] == '(*' and check_comments[i][-1] == '*)':
                         left_idx = check_comments[i].index('(*')
                         right_idx = check_comments[i].index('*)')
                         check_comments[i] = check_comments[i][:left_idx] + check_comments[i][right_idx + 1:]
-                    
-            elif '(*' == check_comments[i][0][:2] and '*)' != check_comments[i][-1][-2:]:
-                raise Exception("Error en comentario, " + "linea " + str(i+1))
-            
-            elif '(*' != check_comments[i][0][:2] and '*)' == check_comments[i][-1][-2:]:
-                raise Exception("Error en comentario, " + "linea " + str(i+1))
             
         lines_c = [' '.join(line) for line in check_comments]
-
         return self.remove_spaces(lines_c)  
         return lines
 
@@ -232,7 +228,6 @@ class Lexer:
                 i += 1
         return output
 
-
     def draw_mega_afd(self, afd):
 
         G = nx.MultiDiGraph()
@@ -258,40 +253,55 @@ class Lexer:
         dot.render('mega/megaautomata', format='png')
 
     
+    def generate_automatas(self):
+        mega_content = []
+        count = 0
+        for token in lexer.tokens:
+            ff = Format(token.regex)
+            token.regex = ff.positiveId(token.regex + '#')
+            token.regex = ff.zeroOrOneId(token.regex)
+            token.regex = lexer.remove_double_parentheses(token.regex)
+            token.regex = ff.concat(token.regex)
+            
+            afdd = AFD(token)
+            new_afd = afdd.generateAFD(count)
+            mega_content.append(new_afd)
+            count += len(new_afd)
+        return mega_content
+    
+
+    def unify(self, mega_content):
+        stack = []    
+        for element in mega_content:
+            for state in element:
+                if state.start:
+                    state.start = False
+                    init_state = StateAFD(name='init', start=True, transitions={})
+                    init_state.transitions['949'] = state.name
+                    stack.append(init_state)
+                stack.append(state)
+        return stack
+    
+
+    def read(self):
+        self.getTokens()
+        self.change_range_format()
+        self.surround_dot()
+        self.replace_tokens()
+    
 
 
     
 if __name__ == '__main__':
-    lexer = Lexer('thompsonTools/lexer.yal')
-    # lexer = Lexer('lexer.yal')
-    tokenizer = lexer.getTokens()
-    lexer.change_range_format()
-    lexer.surround_dot()
-    lexer.replace_tokens()
 
-    mega_content = []
-    count = 0
-    for token in lexer.tokens:
-        ff = Format(token.regex)
-        token.regex = ff.positiveId(token.regex + '#')
-        token.regex = ff.zeroOrOneId(token.regex)
-        token.regex = lexer.remove_double_parentheses(token.regex)
-        token.regex = ff.concat(token.regex)
-        
-        afdd = AFD(token)
-        new_afd = afdd.generateAFD(count)
-        mega_content.append(new_afd)
-        count += len(new_afd)
+    if len(sys.argv) < 2:
+        print("Por favor ingrese el archivo .yal")
+        sys.exit(1)
 
-
-    stack = []    
-    for element in mega_content:
-        for state in element:
-            if state.start:
-                state.start = False
-                init_state = StateAFD(name='init', start=True, transitions={})
-                init_state.transitions['949'] = state.name
-                stack.append(init_state)
-            stack.append(state)
+    yal_file = sys.argv[1]
+    lexer = Lexer(yal_file)
     
-    lexer.draw_mega_afd(stack)
+    lexer.read()
+    mega_content = lexer.generate_automatas()
+    mega_automata = lexer.unify(mega_content)
+    lexer.draw_mega_afd(mega_automata)

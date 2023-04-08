@@ -1,6 +1,7 @@
   
-(* Ejemplo básico *)
+(* Ejemplo *)
 
+(* Introducir cualquier header aqui *)
 
 let delim = [' ''\t''\n']
 let ws = delim+
@@ -10,6 +11,21 @@ let digits = digit+
 let id = letter(letter|digit)*
 let number = digits(.digits)?('E'['+''-']?digits)?
 
+rule tokens = 
+    ws
+  | id        { return ID } (* Cambie por una acción válida, que devuelva el token *)
+  | number    { return NUMBER }
+  | ';'       { return SEMICOLON }
+  | ":="      { return ASSIGNOP }
+  | '<'       { return LT }
+  | '='       { return EQ }
+  | '+'       { return PLUS }
+  | '-'       { return MINUS }
+  | '*'       { return TIMES }
+  | '/'       { return DIV }
+  | '('       { return LPAREN }
+  | ')'       { return RPAREN }
 
+(* Introducir cualquier trailer aqui *)
              
              
