@@ -216,7 +216,6 @@ class Lexer:
             attrs = G.nodes[node]
             dot.node(node, **attrs)
 
-        # dot.attr(rankdir='LR')
         dot.render('mega/megaautomata', format='png')
 
     
@@ -225,7 +224,6 @@ class Lexer:
     
 if __name__ == '__main__':
     lexer = Lexer('thompsonTools/lexer.yal')
-    # lexer = Lexer('lexer.yal')
     tokenizer = lexer.getTokens()
     lexer.change_range_format()
     lexer.surround_dot()
@@ -257,13 +255,3 @@ if __name__ == '__main__':
             stack.append(state)
     
     lexer.draw_mega_afd(stack)
-    # afdd = AFD(lexer.tokens[6])
-    # st = afdd.syntaxTree()
-    # afdd.printVisualTree(st[0])
-    # afdd.generateAFD()
-
-    # lexer.remove_unnecesary_parentheses()
-
-
-
-    aa = 0
