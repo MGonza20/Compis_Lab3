@@ -221,7 +221,7 @@ class AFD:
         return self.tableSet
         
 
-    def genAFD(self):
+    def genAFD(self, count_states = 0):
         table = self.tableSet
         states = [self.tree.firstpos]
         toDo = [self.tree.firstpos]
@@ -256,7 +256,7 @@ class AFD:
                 elem.accepting = True
         
         # Changing the name of the states
-        count = 0
+        count = count_states
         for state in newAFD:
             for st in newAFD:
                 for key, transition in st.transitions.items():
@@ -428,7 +428,7 @@ class AFD:
 
 
     
-    def generateAFD(self):
+    def generateAFD(self, count_states):
         st = self.syntaxTree()
         anulable = self.anulable(st[0])
         fP = self.firstPosMethod(anulable)
@@ -438,7 +438,7 @@ class AFD:
         self.genNextPosDict(treeVar)
         self.genNextPos(treeVar)
         self.tableToObj()
-        return self.genAFD()
+        return self.genAFD(count_states)
         # self.draw_afd(data)
 
     

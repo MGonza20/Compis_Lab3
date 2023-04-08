@@ -160,6 +160,7 @@ class Lexer:
             if token.regex.count('.') > 0:
                 token.regex = token.regex.replace('.', "'.'" )
     
+
     def remove_double_parentheses(self, token):
         i = 0
         output = ""
@@ -193,7 +194,6 @@ class Lexer:
         return output
 
 
-
     def draw_mega_afd(self, afd):
 
         G = nx.MultiDiGraph()
@@ -216,7 +216,7 @@ class Lexer:
             attrs = G.nodes[node]
             dot.node(node, **attrs)
 
-        dot.attr(rankdir='LR')
+        # dot.attr(rankdir='LR')
         dot.render('mega/megaautomata', format='png')
 
     
@@ -225,12 +225,14 @@ class Lexer:
     
 if __name__ == '__main__':
     lexer = Lexer('thompsonTools/lexer.yal')
+    # lexer = Lexer('lexer.yal')
     tokenizer = lexer.getTokens()
     lexer.change_range_format()
     lexer.surround_dot()
     lexer.replace_tokens()
 
     mega_content = []
+    count = 0
     for token in lexer.tokens:
         ff = Format(token.regex)
         token.regex = ff.positiveId(token.regex + '#')
@@ -239,31 +241,17 @@ if __name__ == '__main__':
         token.regex = ff.concat(token.regex)
         
         afdd = AFD(token)
-        new_afd = afdd.generateAFD()
+        new_afd = afdd.generateAFD(count)
         mega_content.append(new_afd)
-
-
-    count = 0
-    for obj in mega_content:
-        for state in obj:
-            old_name = state.name
-            new_name = chr(65 + count)
-
-            state.name = new_name
-            for list_state in obj:
-                for transition_key, transition_value in list_state.transitions.items():
-                    if transition_value == old_name:
-                        list_state.transitions[transition_key] = new_name
-            count += 1
+        count += len(new_afd)
 
 
     stack = []    
-    init_state = StateAFD(name='init', start=True, transitions={})
-    # auto = mega_content.pop(0)
     for element in mega_content:
         for state in element:
             if state.start:
                 state.start = False
+                init_state = StateAFD(name='init', start=True, transitions={})
                 init_state.transitions['949'] = state.name
                 stack.append(init_state)
             stack.append(state)
