@@ -10,6 +10,7 @@ class Token:
         def __init__(self, name):
             self.name = name
             self.regex = None
+            self.line_no = None
     
         def __str__(self):
             return f"Token({self.name}, {self.regex})"
@@ -77,29 +78,30 @@ class Lexer:
 
     def getTokens(self):
         lines = self.getLines()
-        for line in lines:
+        for line_no, line in enumerate(lines, start=1):
             # generando tokens
             if line[:3] == 'let':
                 name, regex = line[3:].split('=')
                 token = Token(name)
                 token.regex = regex
+                token.line_no = line_no
                 self.tokens.append(token)
 
 
-    def range_maker(self, start, end):
+    def range_maker(self, start, end, no):
         if len(start) == 3 and len(end) == 3:
             start, end = start[1], end[1]
 
         if start.isalpha() and end.isalpha():
             if ord(start) > ord(end):
-                raise Exception("Rango incorrecto")
+                raise Exception("Error: Rango incorrecto, linea " + str(no))
             elements = [chr(i) for i in range(ord(start), ord(end) + 1)]
             aaa = 123
 
         elif start.isdigit() and end.isdigit():
             start, end = int(start), int(end)
             if start > end:
-                raise Exception("Rango incorrecto")
+                raise Exception("Error: Rango incorrecto, linea " + str(no))
             elements = [str(i) for i in range(start, end + 1)]
         else:
             raise Exception("Formato de regex incorrecto")
@@ -117,23 +119,18 @@ class Lexer:
                 p_left = token.regex.count("(")
                 p_right = token.regex.count(")")
                 if (p_left + p_right) % 2 != 0:
-                    raise Exception("Error: Los parentesis deben estar balanceados")
+                    raise Exception("Error: Los parentesis no estan balanceados, "+ "linea " + str(token.line_no))
                 
                 c_left = token.regex.count("[") 
                 c_right = token.regex.count("]") 
                 if (c_left + c_right )% 2 != 0:
-                    raise Exception("Error: Los corchetes deben estar balanceados")
+                    raise Exception("Error: Los corchetesno estan balanceados, "+ "linea " + str(token.line_no))
 
                 
                 if token.regex[i] == '[':
-                    # Si las comillas no estan balanceadas
                     if token.regex.count("'") % 2 != 0:
-                        raise Exception("Comillas no balanceadas")
+                        raise Exception("Error en comillas, " + "linea " + str(token.line_no))
                     
-                    # Si hay mas de 1 comilla al inicio o al final
-                    if token.regex[:-1].endswith("''") or token.regex[1:].startswith("''"):
-                        raise Exception("Error: Solo es valido 1 comilla al principio y al final")
-                
                     content = ""
                     j = i + 1
                     while token.regex[j] != ']':
@@ -150,7 +147,7 @@ class Lexer:
                                 continue
                             elif '-' in tokens_list[k]:
                                 start, end = tokens_list[k].split('-')
-                                elements += self.range_maker(start, end)
+                                elements += self.range_maker(start, end, token.line_no)
 
                         if elements:
                             content = '|'.join(elements)
@@ -158,9 +155,9 @@ class Lexer:
                     else:
                         if '-' in content:
                             if content.count('-') > 1:
-                                raise Exception("Formato de regex incorrecto")
+                                raise Exception("Formato de regex incorrecto,"+ "linea " + str(token.line_no))
                             start, end = content.split('-')
-                            elements = self.range_maker(start, end)
+                            elements = self.range_maker(start, end, token.line_no)
                             content = '|'.join(elements)
                     new_regex += '(' + content + ')'
                     i = j

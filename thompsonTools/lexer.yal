@@ -4,7 +4,7 @@
 
 let delim = [' ''\t''\n']
 let ws = delim+
-let letter = ['A'-'C''a'-'c'] (* Letras mayúsculas y minúsculas *)
+let letter = ['A'-'C''a'-'c'] (* Letras mayusculas y minusculas *)
 let digit = ['0'-'2']
 let digits = digit+
 let id = letter(letter|digit)*
