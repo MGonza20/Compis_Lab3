@@ -5,6 +5,7 @@
 
 let delim = [' ''\t''\n']
 let ws = delim+
+let aa = ['xyz']
 let letter = ['A'-'C''a'-'c'] (* Letras mayusculas y minusculas *)
 let digit = ['0'-'2']
 let digits = digit+
