@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='sara_compis1_tools',
-    version='0.0.2',
+    version='0.0.3',
     description='A collection of tools for the Language Design course',
     long_description=open('README.txt').read() + '\n\n' + open('CHANGELOG.txt').read(),
     url='https://github.com/MGonza20/Compis_Lab3',

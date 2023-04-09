@@ -1,6 +1,6 @@
 
 import sys
-import sara_compis1_tools.readLex as tool
+import sara_compis1_tools.lexGen as tool
 
 if len(sys.argv) < 2:
     print("Por favor ingrese el archivo .yal")
@@ -12,4 +12,4 @@ lex_var.read()
 mega_content = lex_var.generate_automatas()
 mega_automata = lex_var.unify(mega_content)
 lex_var.draw_mega_afd(mega_automata)
-    
+        

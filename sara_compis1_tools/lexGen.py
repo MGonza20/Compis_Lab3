@@ -300,36 +300,23 @@ class Lexer:
 
     
 if __name__ == '__main__':
-
-    # if len(sys.argv) < 2:
-    #     print("Por favor ingrese el archivo .yal")
-    #     sys.exit(1)
-
-    yal_file = 'sara_compis1_tools/lexer.yal'
-    # yal_file = sys.argv[1]
-    lexer = Lexer(yal_file)
     
-    lexer.read()
-    mega_content = lexer.generate_automatas()
-    mega_automata = lexer.unify(mega_content)
-    lexer.draw_mega_afd(mega_automata)
+        script_content = '''
+import sys
+import sara_compis1_tools.lexGen as tool
 
-#     script_content = '''
-# import sys
-# import sara_compis1_tools.readLex as tool
+if len(sys.argv) < 2:
+    print("Por favor ingrese el archivo .yal")
+    sys.exit(1)
 
-# if len(sys.argv) < 2:
-#     print("Por favor ingrese el archivo .yal")
-#     sys.exit(1)
+yal_file = sys.argv[1]
+lex_var = tool.Lexer(yal_file)
+lex_var.read()
+mega_content = lex_var.generate_automatas()
+mega_automata = lex_var.unify(mega_content)
+lex_var.draw_mega_afd(mega_automata)
+        '''
 
-# yal_file = sys.argv[1]
-# lex_var = tool.Lexer(yal_file)
-# lex_var.read()
-# mega_content = lex_var.generate_automatas()
-# mega_automata = lex_var.unify(mega_content)
-# lex_var.draw_mega_afd(mega_automata)
-#     '''
-
-#     with open('generated.py', 'w') as script_file:
-#         script_file.write(script_content)
+        with open('generated.py', 'w') as script_file:
+            script_file.write(script_content)
 

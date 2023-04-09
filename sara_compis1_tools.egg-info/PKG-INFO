@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: sara-compis1-tools
-Version: 0.0.2
+Version: 0.0.3
 Summary: A collection of tools for the Language Design course
 Home-page: https://github.com/MGonza20/Compis_Lab3
 Author: Sara Paguaga
@@ -18,6 +18,6 @@ This is collection of tools for the Language Design course to be able to generat
 Change Log
 ===========
 
-0.0.2 (08/04/2023)
+0.0.3 (08/04/2023)
 ------------------
-- Minor Fixes
+- Considering more cases.
