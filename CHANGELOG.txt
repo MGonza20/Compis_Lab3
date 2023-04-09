@@ -1,6 +1,6 @@
 Change Log
 ===========
 
-0.0.3 (08/04/2023)
+0.0.4 (08/04/2023)
 ------------------
-- Considering more cases.
+- More fixes.
