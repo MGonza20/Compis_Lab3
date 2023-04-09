@@ -4,6 +4,7 @@ MANIFEST.in
 README.txt
 setup.py
 sara_compis1_tools/Format.py
+sara_compis1_tools/Lex_gen.py
 sara_compis1_tools/StateAFD.py
 sara_compis1_tools/Syntax.py
 sara_compis1_tools/__init__.py

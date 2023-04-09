@@ -256,11 +256,11 @@ class Lexer:
     def generate_automatas(self):
         mega_content = []
         count = 0
-        for token in lexer.tokens:
+        for token in self.tokens:
             ff = Format(token.regex)
             token.regex = ff.positiveId(token.regex + '#')
             token.regex = ff.zeroOrOneId(token.regex)
-            token.regex = lexer.remove_double_parentheses(token.regex)
+            token.regex = self.remove_double_parentheses(token.regex)
             token.regex = ff.concat(token.regex)
             
             afdd = AFD(token)

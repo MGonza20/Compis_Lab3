@@ -1,8 +1,6 @@
-
 import os
 import networkx as nx
 from graphviz import Digraph
-
 
 from Format import Format
 os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz/bin'    
