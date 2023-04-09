@@ -1,0 +1,16 @@
+CHANGELOG.txt
+LICENSE.txt
+MANIFEST.in
+README.txt
+setup.py
+sara_compis1_tools/Format.py
+sara_compis1_tools/StateAFD.py
+sara_compis1_tools/Syntax.py
+sara_compis1_tools/__init__.py
+sara_compis1_tools/directAFD.py
+sara_compis1_tools/readLex.py
+sara_compis1_tools.egg-info/PKG-INFO
+sara_compis1_tools.egg-info/SOURCES.txt
+sara_compis1_tools.egg-info/dependency_links.txt
+sara_compis1_tools.egg-info/requires.txt
+sara_compis1_tools.egg-info/top_level.txt

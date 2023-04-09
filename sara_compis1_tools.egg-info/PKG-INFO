@@ -1,0 +1,23 @@
+Metadata-Version: 2.1
+Name: sara-compis1-tools
+Version: 0.0.1
+Summary: A collection of tools for the Language Design course
+Home-page: https://github.com/MGonza20/Compis_Lab3
+Author: Sara Paguaga
+Author-email: sara.paguaga@gmail.com
+License: MIT
+Keywords: Compiler
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+License-File: LICENSE.txt
+
+This is collection of tools for the Language Design course to be able to generate a lexical analyzer.
+
+Change Log
+===========
+
+0.0.1 (08/04/2023)
+------------------
+- First Release

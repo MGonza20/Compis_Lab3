@@ -1,14 +1,12 @@
 
-
-from Format import Format
 import os
-os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz/bin'    
-from StateAFD import StateAFD
-from Syntax import Syntax
-
-import pydot
 import networkx as nx
 from graphviz import Digraph
+
+
+from Format import Format
+os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz/bin'    
+from StateAFD import StateAFD
 
 
 class Node:
