@@ -68,6 +68,8 @@ class Format:
 
             for i in range(len(expression)):
 
+                
+
                 if expression[i] == '?':
                     if expression[i-1] == ')':
                         j = i-2
@@ -87,7 +89,15 @@ class Format:
                         before = expression[:i-1]
                         after = expression[i+1:]
                         middle = expression[i-1]
-                        expression = f'{before}({middle}|ε){after}'    
+                        expression = f'{before}({middle}|ε){after}' 
+                    elif i-2 >= 0:
+                        ck = expression[i-3:i]
+                        if ck[0] == "'" and ck[-1] == "'":
+                            expression = f'{expression[:i-3]}({ck}|ε){expression[i+1:]}'
+
+                               
+
+                    
         return expression
 
 
@@ -107,14 +117,14 @@ class Format:
                     elif len(val) == 1:
                         val = '00' + val
                     i += 2
-                elif val.isalnum() or val == "#":
+                elif val.isalnum() or val in ["#", '_']:
                     val = str(ord(val))
                     if len(val) == 2:
                         val = '0' + val
                     elif len(val) == 1:
                         val = '00' + val
 
-            elif regexx[i].isalnum() or regexx[i] == "#":
+            elif regexx[i].isalnum() or regexx[i] in ['#', '_']:
                 val = str(ord(val)) 
                 if len(val) == 2:
                     val = '0' + val

@@ -245,10 +245,11 @@ class Lexer:
 
             for transition, final_dest in state.transitions.items():
                 G.add_node(str(final_dest))
-                if int(transition) in [n for n in range(0, 35)]:
-                    G.add_edge(str(state.name), str(final_dest), label=transition, dir='forward')    
-                else:
-                    G.add_edge(str(state.name), str(final_dest), label=str(chr(int(transition))), dir='forward')
+                
+                if int(transition) not in [el for el in range(0, 35)]:
+                    transition = str(chr(int(transition)))
+
+                G.add_edge(str(state.name), str(final_dest), label=transition, dir='forward')    
 
         dot = Digraph()
         for u, v, data in G.edges(data=True):
@@ -300,23 +301,36 @@ class Lexer:
 
     
 if __name__ == '__main__':
+
+    # if len(sys.argv) < 2:
+    #     print("Por favor ingrese el archivo .yal")
+    #     sys.exit(1)
+
+    yal_file = 'sara_compis1_tools/lexer.yal'
+    # yal_file = sys.argv[1]
+    lexer = Lexer(yal_file)
     
-        script_content = '''
-import sys
-import sara_compis1_tools.lexGen as tool
+    lexer.read()
+    mega_content = lexer.generate_automatas()
+    mega_automata = lexer.unify(mega_content)
+    lexer.draw_mega_afd(mega_automata)
 
-if len(sys.argv) < 2:
-    print("Por favor ingrese el archivo .yal")
-    sys.exit(1)
+#     script_content = '''
+# import sys
+# import sara_compis1_tools.readLex as tool
 
-yal_file = sys.argv[1]
-lex_var = tool.Lexer(yal_file)
-lex_var.read()
-mega_content = lex_var.generate_automatas()
-mega_automata = lex_var.unify(mega_content)
-lex_var.draw_mega_afd(mega_automata)
-        '''
+# if len(sys.argv) < 2:
+#     print("Por favor ingrese el archivo .yal")
+#     sys.exit(1)
 
-        with open('generated.py', 'w') as script_file:
-            script_file.write(script_content)
+# yal_file = sys.argv[1]
+# lex_var = tool.Lexer(yal_file)
+# lex_var.read()
+# mega_content = lex_var.generate_automatas()
+# mega_automata = lex_var.unify(mega_content)
+# lex_var.draw_mega_afd(mega_automata)
+#     '''
+
+#     with open('generated.py', 'w') as script_file:
+#         script_file.write(script_content)
 

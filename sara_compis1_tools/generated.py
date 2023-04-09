@@ -2,11 +2,11 @@
 import sys
 import sara_compis1_tools.lexGen as tool
 
-if len(sys.argv) < 2:
-    print("Por favor ingrese el archivo .yal")
-    sys.exit(1)
+# if len(sys.argv) < 2:
+#     print("Por favor ingrese el archivo .yal")
+#     sys.exit(1)
 
-yal_file = sys.argv[1]
+yal_file = 'sara_compis1_tools/lexer.yal'
 lex_var = tool.Lexer(yal_file)
 lex_var.read()
 mega_content = lex_var.generate_automatas()
