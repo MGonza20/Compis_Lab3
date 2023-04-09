@@ -245,7 +245,10 @@ class Lexer:
 
             for transition, final_dest in state.transitions.items():
                 G.add_node(str(final_dest))
-                G.add_edge(str(state.name), str(final_dest), label=str(chr(int(transition))), dir='forward')
+                if int(transition) in [n for n in range(0, 35)]:
+                    G.add_edge(str(state.name), str(final_dest), label=transition, dir='forward')    
+                else:
+                    G.add_edge(str(state.name), str(final_dest), label=str(chr(int(transition))), dir='forward')
 
         dot = Digraph()
         for u, v, data in G.edges(data=True):
